@@ -40,11 +40,65 @@ export abstract class DateHelperService {
   abstract getFirstDayOfWeek(): WeekDayIndex;
   abstract format(date: Date, formatStr: string): string;
 
-  parseDate(text: string): Date | undefined {
+  parseDate(text: string, format: string): Date | undefined {
     if (!text) {
       return;
     }
-    return fnsParse(text);
+    if (!format) {
+      return fnsParse(text);
+    }
+    if (text.length !== format.length) {
+      return;
+    }
+    let date: number | undefined;
+    let hours: number | undefined;
+    let minutes: number | undefined;
+    let seconds: number | undefined;
+    let ms: number | undefined;
+    let si = format.indexOf('y');
+    let fi = format.lastIndexOf('y');
+    const year = Number(text.substr(si, fi - si + 1));
+    si = format.indexOf('M');
+    fi = format.lastIndexOf('M');
+    const month = Number(text.substr(si, fi - si + 1)) - 1;
+    const parsedDate = new Date(year, month);
+    if (format.indexOf('dd') > -1) {
+      si = format.indexOf('d');
+      fi = format.lastIndexOf('d');
+      date = Number(text.substr(si, fi - si + 1));
+      parsedDate.setDate(date);
+    }
+    if (format.indexOf('HH') > -1) {
+      si = format.indexOf('H');
+      fi = format.lastIndexOf('H');
+      hours = Number(text.substr(si, fi - si + 1));
+      parsedDate.setHours(hours);
+    }
+    if (format.indexOf('hh') > -1) {
+      si = format.indexOf('h');
+      fi = format.lastIndexOf('h');
+      hours = Number(text.substr(si, fi - si + 1));
+      parsedDate.setHours(hours);
+    }
+    if (format.indexOf('mm') > -1) {
+      si = format.indexOf('m');
+      fi = format.lastIndexOf('m');
+      minutes = Number(text.substr(si, fi - si + 1));
+      parsedDate.setMinutes(minutes);
+    }
+    if (format.indexOf('ss') > -1) {
+      si = format.indexOf('s');
+      fi = format.lastIndexOf('s');
+      seconds = Number(text.substr(si, fi - si + 1));
+      parsedDate.setSeconds(seconds);
+    }
+    if (format.indexOf('fff') > -1) {
+      si = format.indexOf('f');
+      fi = format.lastIndexOf('f');
+      ms = Number(text.substr(si, fi - si + 1));
+      parsedDate.setMilliseconds(ms);
+    }
+    return parsedDate;
   }
 
   parseTime(text: string): Date | undefined {
